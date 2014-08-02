@@ -58,7 +58,20 @@ namespace CIandTRefactoringTools
         private static Solution AddDataContractAttributes(Solution solution, IList<IdentifierNameSyntax> complexTypes, List<DocumentId> changedDocs)
         {
             Solution newSolution = solution;
-            var visitorDataContractRewriter = new DataContractElegibleComplexTypeRewriter(complexTypes, newSolution.Workspace);
+
+            var visitorDataContract = new DataContractElegibleComplexTypeVisitor(complexTypes, solution.Workspace, null);
+
+            foreach (var project in solution.Projects)
+            {
+                var newProj = newSolution.GetProject(project.Id);
+                foreach (var projectDoc in newProj.Documents)
+                {
+                    var originalNode = projectDoc.GetSyntaxRootAsync().Result;
+                    visitorDataContract.Visit(originalNode);
+                }
+            }
+
+            var visitorDataContractRewriter = new DataContractElegibleComplexTypeRewriter(visitorDataContract.ElegibleClasses, newSolution.Workspace);
 
             foreach (var project in solution.Projects)
             {
@@ -103,7 +116,15 @@ namespace CIandTRefactoringTools
         {
             var newProject = solution.GetProject(project.Id);
 
-            var svcModelLoc = Assembly.LoadWithPartialName("System.ServiceModel").Location;
+            newProject = AddReferenceToProject(newProject, "System.ServiceModel");
+            newProject = AddReferenceToProject(newProject, "System.Runtime.Serialization");
+
+            return newProject.Solution;
+        }
+
+        private static Project AddReferenceToProject(Project newProject, string projectName)
+        {
+            var svcModelLoc = Assembly.LoadWithPartialName(projectName).Location;
 
             if (!newProject.MetadataReferences.Any(a => Path.GetFileName(a.Display).Equals(Path.GetFileName(svcModelLoc), StringComparison.InvariantCultureIgnoreCase)))
             {
@@ -112,7 +133,7 @@ namespace CIandTRefactoringTools
                 newProject = newProject.AddMetadataReference(metaRef);
             }
 
-            return newProject.Solution;
+            return newProject;
         }
 
         private static string GetInterfaceSource(string interfaceName, NamespaceDeclarationSyntax targetNamespace, ClassDeclarationSyntax classDecl)
@@ -146,12 +167,14 @@ namespace CIandTRefactoringTools
 
         private static void ExtractComplexTypes(IList<IdentifierNameSyntax> complexTypes, MethodDeclarationSyntax methodDeclSyntax)
         {
-            if ((methodDeclSyntax.ReturnType is IdentifierNameSyntax) && (!complexTypes.Any(t => t.Identifier.ValueText.Equals((methodDeclSyntax.ReturnType as IdentifierNameSyntax).Identifier.ValueText))))
+            if ((methodDeclSyntax.ReturnType is IdentifierNameSyntax) && (!complexTypes.Any(t => 
+                t.Identifier.ValueText.Equals((methodDeclSyntax.ReturnType as IdentifierNameSyntax).Identifier.ValueText))))
             {
                 complexTypes.Add((methodDeclSyntax.ReturnType as IdentifierNameSyntax));
             }
 
-            foreach (var param in methodDeclSyntax.ParameterList.Parameters.Where(p => p.Type is IdentifierNameSyntax).Select(p => p.Type as IdentifierNameSyntax))
+            foreach (var param in methodDeclSyntax.ParameterList.Parameters.Where(p => 
+                p.Type is IdentifierNameSyntax).Select(p => p.Type as IdentifierNameSyntax))
             {
                 if (!complexTypes.Any(t => t.Identifier.ValueText.Equals(param.Identifier.ValueText)))
                 {
@@ -256,19 +279,34 @@ namespace CIandTRefactoringTools
         }
     }
 
-    public class DataContractElegibleComplexTypeRewriter(private IList<IdentifierNameSyntax> elegibleComplexTypes, private Workspace workspace) : CSharpSyntaxRewriter
+    public class DataContractElegibleComplexTypeRewriter(private Dictionary<string, ClassDeclarationSyntax> elegibleComplexTypes, private Workspace workspace) : CSharpSyntaxRewriter
     {
         public override SyntaxNode VisitClassDeclaration(ClassDeclarationSyntax node)
         {
-            if (elegibleComplexTypes.Any(cp => cp.Identifier.ValueText.Equals(node.Identifier.ValueText)))
-            {
-                //TODO Add DataMember in all public methods
-                //TODO Add DataMember and DataContract in subclasses (Think about circular dependency)
+            NamespaceDeclarationSyntax namespaceDSyntax = node.FirstAncestorOrSelf<NamespaceDeclarationSyntax>();
 
+            string nodeFullName = string.Format("{0}.{1}", namespaceDSyntax.Name, node.Identifier.ValueText);
+
+            if (elegibleComplexTypes.ContainsKey(nodeFullName))
+            {
                 List<AttributeData> attributeList = new List<AttributeData>();
                 attributeList.Add(
                 CodeGenerationSymbolFactory.CreateAttributeData(CodeGenerationSymbolFactory.CreateNamedTypeSymbol(null, Accessibility.Public, new SymbolModifiers(), TypeKind.Unknown, "DataContract")));
                 var newNode = CodeGenerator.AddAttributes(node, workspace, attributeList);
+
+                List<PropertyDeclarationSyntax> propertiesList = new List<PropertyDeclarationSyntax>();
+                propertiesList = newNode.Members.OfType<PropertyDeclarationSyntax>().ToList();
+
+                newNode = newNode.ReplaceNodes(propertiesList.Select(p => p as SyntaxNode), (originalNode, updatedNode) =>
+                {
+                    List<AttributeData> memberAttributeList = new List<AttributeData>();
+                    memberAttributeList.Add(
+                        CodeGenerationSymbolFactory.CreateAttributeData(CodeGenerationSymbolFactory.CreateNamedTypeSymbol(
+                            null, Accessibility.Public, new SymbolModifiers(), TypeKind.Unknown, "DataMember")));
+
+                    return CodeGenerator.AddAttributes(originalNode, workspace, memberAttributeList);
+                });
+
                 return newNode;
             }
 
@@ -276,5 +314,86 @@ namespace CIandTRefactoringTools
         }
     }
 
-    
+
+    public class DataContractElegibleComplexTypeVisitor : CSharpSyntaxVisitor
+    {
+        Dictionary<string, ClassDeclarationSyntax> elegibleClasses = new Dictionary<string, ClassDeclarationSyntax>();
+
+        IList<IdentifierNameSyntax> elegibleComplexTypes;
+
+        Workspace workspace;
+
+        public Dictionary<string, ClassDeclarationSyntax> ElegibleClasses
+        {
+            get
+            {
+                return elegibleClasses;
+            }
+
+            set
+            {
+                elegibleClasses = value;
+            }
+        }
+
+        public DataContractElegibleComplexTypeVisitor(IList<IdentifierNameSyntax> elegibleComplexTypes, Workspace workspace, Dictionary<string, ClassDeclarationSyntax> elegibleClasses) 
+        {
+            this.elegibleComplexTypes = elegibleComplexTypes;
+            this.workspace = workspace;
+            if (elegibleClasses != null)
+            {
+                this.elegibleClasses = elegibleClasses;
+            }
+        }
+
+        public override void VisitClassDeclaration(ClassDeclarationSyntax node)
+        {
+            if (elegibleComplexTypes.Any(cp => cp.Identifier.ValueText.Equals(node.Identifier.ValueText)))
+            {
+                NamespaceDeclarationSyntax namespaceDSyntax = node.FirstAncestorOrSelf<NamespaceDeclarationSyntax>();
+
+                string nodeFullName = string.Format("{0}.{1}", namespaceDSyntax.Name, node.Identifier.ValueText);
+
+                //TODO Verificar se esta pegando o nome correto 
+
+                if (ElegibleClasses.ContainsKey(nodeFullName))
+                {
+                    return;
+                }
+
+                elegibleClasses[nodeFullName] = node;
+
+                List<PropertyDeclarationSyntax> propertiesList = new List<PropertyDeclarationSyntax>();
+                propertiesList = node.Members.OfType<PropertyDeclarationSyntax>().ToList();
+
+                foreach (var property in propertiesList)
+                {
+                    List<AttributeData> memberAttributeList = new List<AttributeData>();
+                    memberAttributeList.Add(
+                        CodeGenerationSymbolFactory.CreateAttributeData(CodeGenerationSymbolFactory.CreateNamedTypeSymbol(
+                            null, Accessibility.Public, new SymbolModifiers(), TypeKind.Unknown, "DataMember")));
+                    if ((property.Type is IdentifierNameSyntax))
+                    {
+                        List<IdentifierNameSyntax> complexTypes = new List<IdentifierNameSyntax>() {
+                            (property.Type as IdentifierNameSyntax)
+                        };
+
+                        Solution newSolution = workspace.CurrentSolution;
+                        var visitorDataContractVisitor = new DataContractElegibleComplexTypeVisitor(complexTypes, workspace, this.elegibleClasses);
+
+                        foreach (var project in newSolution.Projects)
+                        {
+                            var newProj = newSolution.GetProject(project.Id);
+                            foreach (var projectDoc in newProj.Documents)
+                            {
+                                var originalNode = projectDoc.GetSyntaxRootAsync().Result;
+
+                                visitorDataContractVisitor.Visit(originalNode);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
