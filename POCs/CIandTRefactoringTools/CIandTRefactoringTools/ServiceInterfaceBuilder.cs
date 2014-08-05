@@ -22,7 +22,7 @@ namespace CIandTRefactoringTools
             var interfaceFileName = string.Concat(interfaceName, ".cs");
             var targetNamespace = classDecl.Parent.AncestorsAndSelf().OfType<NamespaceDeclarationSyntax>().First();
 
-            IList<IdentifierNameSyntax> complexTypes = new List<IdentifierNameSyntax>();
+            IList<SimpleNameSyntax> complexTypes = new List<SimpleNameSyntax>();
 
             foreach (var method in GetPublicMethods(classDecl))
             {
@@ -55,11 +55,11 @@ namespace CIandTRefactoringTools
             return formattedSolution;
         }
 
-        private static Solution AddDataContractAttributes(Solution solution, IList<IdentifierNameSyntax> complexTypes, List<DocumentId> changedDocs)
+        private static Solution AddDataContractAttributes(Solution solution, IList<SimpleNameSyntax> complexTypes, List<DocumentId> changedDocs)
         {
             Solution newSolution = solution;
 
-            var visitorDataContract = new DataContractElegibleComplexTypeVisitor(complexTypes, solution.Workspace, null);
+            var visitorDataContract = new DataContractElegibleComplexTypeWalker(complexTypes, solution.Workspace, null);
 
             foreach (var project in solution.Projects)
             {
@@ -165,7 +165,7 @@ namespace CIandTRefactoringTools
             return source.ToString();
         }
 
-        private static void ExtractComplexTypes(IList<IdentifierNameSyntax> complexTypes, MethodDeclarationSyntax methodDeclSyntax)
+        private static void ExtractComplexTypes(IList<SimpleNameSyntax> complexTypes, MethodDeclarationSyntax methodDeclSyntax)
         {
             if ((methodDeclSyntax.ReturnType is IdentifierNameSyntax) && (!complexTypes.Any(t => 
                 t.Identifier.ValueText.Equals((methodDeclSyntax.ReturnType as IdentifierNameSyntax).Identifier.ValueText))))
@@ -315,11 +315,11 @@ namespace CIandTRefactoringTools
     }
 
 
-    public class DataContractElegibleComplexTypeVisitor : CSharpSyntaxVisitor
+    public class DataContractElegibleComplexTypeWalker : CSharpSyntaxWalker
     {
         Dictionary<string, ClassDeclarationSyntax> elegibleClasses = new Dictionary<string, ClassDeclarationSyntax>();
 
-        IList<IdentifierNameSyntax> elegibleComplexTypes;
+        IList<SimpleNameSyntax> elegibleComplexTypes;
 
         Workspace workspace;
 
@@ -336,7 +336,8 @@ namespace CIandTRefactoringTools
             }
         }
 
-        public DataContractElegibleComplexTypeVisitor(IList<IdentifierNameSyntax> elegibleComplexTypes, Workspace workspace, Dictionary<string, ClassDeclarationSyntax> elegibleClasses) 
+        public DataContractElegibleComplexTypeWalker(IList<SimpleNameSyntax> elegibleComplexTypes, Workspace workspace, Dictionary<string, ClassDeclarationSyntax> elegibleClasses)
+            : base()
         {
             this.elegibleComplexTypes = elegibleComplexTypes;
             this.workspace = workspace;
@@ -354,8 +355,6 @@ namespace CIandTRefactoringTools
 
                 string nodeFullName = string.Format("{0}.{1}", namespaceDSyntax.Name, node.Identifier.ValueText);
 
-                //TODO Verificar se esta pegando o nome correto 
-
                 if (ElegibleClasses.ContainsKey(nodeFullName))
                 {
                     return;
@@ -366,34 +365,68 @@ namespace CIandTRefactoringTools
                 List<PropertyDeclarationSyntax> propertiesList = new List<PropertyDeclarationSyntax>();
                 propertiesList = node.Members.OfType<PropertyDeclarationSyntax>().ToList();
 
+                var complexSubTypes = new List<SimpleNameSyntax>();
+
                 foreach (var property in propertiesList)
                 {
                     List<AttributeData> memberAttributeList = new List<AttributeData>();
-                    memberAttributeList.Add(
-                        CodeGenerationSymbolFactory.CreateAttributeData(CodeGenerationSymbolFactory.CreateNamedTypeSymbol(
-                            null, Accessibility.Public, new SymbolModifiers(), TypeKind.Unknown, "DataMember")));
-                    if ((property.Type is IdentifierNameSyntax))
+
+                    if ((property.Type is SimpleNameSyntax))
                     {
-                        List<IdentifierNameSyntax> complexTypes = new List<IdentifierNameSyntax>() {
-                            (property.Type as IdentifierNameSyntax)
-                        };
+                        complexSubTypes.AddRange(GetIdentifiersGenericList(property.Type));
+                    }
+                }
 
-                        Solution newSolution = workspace.CurrentSolution;
-                        var visitorDataContractVisitor = new DataContractElegibleComplexTypeVisitor(complexTypes, workspace, this.elegibleClasses);
+                if (complexSubTypes.Any())
+                {
+                    Solution newSolution = workspace.CurrentSolution;
+                    var visitorDataContractVisitor = new DataContractElegibleComplexTypeWalker(complexSubTypes, workspace, this.elegibleClasses);
 
-                        foreach (var project in newSolution.Projects)
+                    foreach (var project in newSolution.Projects)
+                    {
+                        var newProj = newSolution.GetProject(project.Id);
+                        foreach (var projectDoc in newProj.Documents)
                         {
-                            var newProj = newSolution.GetProject(project.Id);
-                            foreach (var projectDoc in newProj.Documents)
-                            {
-                                var originalNode = projectDoc.GetSyntaxRootAsync().Result;
+                            var originalNode = projectDoc.GetSyntaxRootAsync().Result;
 
-                                visitorDataContractVisitor.Visit(originalNode);
-                            }
+                            visitorDataContractVisitor.Visit(originalNode);
                         }
                     }
                 }
             }
         }
+
+        /// <summary>
+        /// Returns a list of Identifiers, checking recursively the generic description
+        /// </summary>
+        /// <param name="simpleNameSyntax">A generic syntax property</param> 
+        /// <param name="filter"></param>
+        /// <returns></returns>
+        public List<SimpleNameSyntax> GetIdentifiersGenericList(TypeSyntax simpleNameSyntax)
+        {
+            var complexSubTypes = new List<SimpleNameSyntax>();
+
+            if ((simpleNameSyntax is IdentifierNameSyntax))
+            {
+                complexSubTypes.Add((simpleNameSyntax as SimpleNameSyntax));
+                return complexSubTypes;
+            }
+
+            if (simpleNameSyntax is GenericNameSyntax)
+            {
+                var genericNameSyntax = simpleNameSyntax as GenericNameSyntax;
+
+                var argumentList = genericNameSyntax.TypeArgumentList;
+
+                complexSubTypes.Add(genericNameSyntax);
+
+                foreach (var item in argumentList.Arguments)
+                {
+                    complexSubTypes.AddRange(GetIdentifiersGenericList(item));
+                }
+            }
+
+            return complexSubTypes;
+        } 
     }
 }
