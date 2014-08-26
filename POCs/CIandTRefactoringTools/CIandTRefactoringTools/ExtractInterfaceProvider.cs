@@ -12,10 +12,10 @@ using Microsoft.CodeAnalysis.Text;
 
 namespace CIandTRefactoringTools
 {
-    [ExportCodeRefactoringProvider(CodeRefactoringProvider.RefactoringId, LanguageNames.CSharp)]
-    internal class CodeRefactoringProvider : ICodeRefactoringProvider
+    [ExportCodeRefactoringProvider(ExtractInterfaceProvider.RefactoringId, LanguageNames.CSharp)]
+    internal class ExtractInterfaceProvider : ICodeRefactoringProvider
     {
-        public const string RefactoringId = "CIandTRefactoringTools";
+        public const string RefactoringId = "ExtractInterfaceProvider";
 
         public async Task<IEnumerable<CodeAction>> GetRefactoringsAsync(Document document, TextSpan textSpan, CancellationToken cancellationToken)
         {
