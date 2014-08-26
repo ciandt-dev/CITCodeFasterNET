@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
+using Microsoft.CodeAnalysis.Simplification;
 
 namespace CIandTRefactoringTools
 {
@@ -19,6 +21,28 @@ namespace CIandTRefactoringTools
             }
 
             return root;
+        }
+
+        public static IList<string> GetUsings(this CompilationUnitSyntax root)
+        {
+            return root.Usings.Select(u => u.Name.ToString()).ToList();
+        }
+
+        public static TypeInfo GetTypeInfoFromIdentifier(this IdentifierNameSyntax identifier, Document document)
+        {
+            var semanticModel = document.GetSemanticModelAsync().Result;
+
+            return semanticModel.GetTypeInfo(identifier);
+        }
+
+        public static Document SimplifyDocument(this Document document)
+        {
+            return Simplifier.ReduceAsync(document, Simplifier.Annotation).Result;
+        }
+
+        public static Document FormatDocument(this Document document)
+        {
+            return Formatter.FormatAsync(document).Result;
         }
     }
 }

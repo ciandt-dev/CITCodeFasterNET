@@ -8,7 +8,9 @@ using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeRefactorings;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.Rename;
+using Microsoft.CodeAnalysis.Simplification;
 using Microsoft.CodeAnalysis.Text;
 
 namespace CIandTRefactoringTools
@@ -43,7 +45,6 @@ namespace CIandTRefactoringTools
         {
             var originalSolution = document.Project.Solution;
 
-
             var newSolution = MakeExplicit(document, varDecl);
 
             // Return the new solution with the now-uppercase type name.
@@ -52,6 +53,33 @@ namespace CIandTRefactoringTools
 
         private Solution MakeExplicit(Document document, IdentifierNameSyntax varDecl)
         {
+            var syntaxRoot = document.GetSyntaxRootAsync().Result;
+
+            var varTargetType = varDecl.GetTypeInfoFromIdentifier(document);
+
+            var varTargetTypeNamespace = varTargetType.Type.ContainingNamespace;
+
+            var fullNamespaceString = varTargetTypeNamespace.ToDisplayString();
+
+            var varTargetTypeIdentifierName = SyntaxFactory.IdentifierName(varTargetType.Type.Name)
+                .WithLeadingTrivia(varDecl.GetLeadingTrivia())
+                .WithTrailingTrivia(varDecl.GetTrailingTrivia());
+
+            var newDeclaration = varDecl.ReplaceNode(varDecl, varTargetTypeIdentifierName);
+
+            var parentVarDeclNamespace = varDecl.FirstAncestorOrSelf<NamespaceDeclarationSyntax>();
+
+            var parentVarDeclNamespaceString = (parentVarDeclNamespace != null) ? parentVarDeclNamespace.Name.ToString() : null;
+
+            var newRoot = syntaxRoot.ReplaceNode(varDecl, newDeclaration);
+
+            if ((!string.IsNullOrWhiteSpace(parentVarDeclNamespaceString)) && (parentVarDeclNamespaceString != fullNamespaceString))
+            {
+                newRoot = (newRoot as CompilationUnitSyntax).WithUsing(fullNamespaceString);
+            }
+
+            document = document.WithSyntaxRoot(newRoot).SimplifyDocument().FormatDocument();
+
             return document.Project.Solution;
         }
     }

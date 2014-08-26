@@ -48,8 +48,9 @@ namespace CIandTRefactoringTools
             foreach (DocumentId docId in changedDocs)
             {
                 var document = formattedSolution.GetDocument(docId);
-                document = Simplifier.ReduceAsync(document, Simplifier.Annotation).Result;
-                document = Formatter.FormatAsync(document).Result;
+
+                document = document.SimplifyDocument().FormatDocument();
+
                 formattedSolution = document.Project.Solution;
             }
             return formattedSolution;
@@ -106,8 +107,8 @@ namespace CIandTRefactoringTools
             var newSolution = solution.AddDocument(documentId, className, source);
 
             var document = newSolution.GetDocument(documentId);
-            document = Simplifier.ReduceAsync(document, Simplifier.Annotation).Result;
-            document = Formatter.FormatAsync(document).Result;
+
+            document = document.SimplifyDocument().FormatDocument();
 
             return document.Project.Solution;
         }
