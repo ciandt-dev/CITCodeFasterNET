@@ -32,7 +32,7 @@ namespace CIandTRefactoringTools
             {
                 return null;
             }
-
+            
             // For any type declaration node, create a code action to reverse the identifier text.
             var action = CodeAction.Create("Export WCF Service", c => ExportWCFServiceAsync(document, classDecl, c));
 

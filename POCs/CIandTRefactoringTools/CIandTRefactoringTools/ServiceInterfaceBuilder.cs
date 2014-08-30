@@ -280,8 +280,17 @@ namespace CIandTRefactoringTools
         }
     }
 
-    public class DataContractElegibleComplexTypeRewriter(private Dictionary<string, ClassDeclarationSyntax> elegibleComplexTypes, private Workspace workspace) : CSharpSyntaxRewriter
+    public class DataContractElegibleComplexTypeRewriter : CSharpSyntaxRewriter
     {
+        private readonly Dictionary<string, ClassDeclarationSyntax> elegibleComplexTypes;
+        private readonly Workspace workspace;
+
+        public DataContractElegibleComplexTypeRewriter(Dictionary<string, ClassDeclarationSyntax> elegibleComplexTypes, Workspace workspace)
+        {
+            this.elegibleComplexTypes = elegibleComplexTypes;
+            this.workspace = workspace;
+        }
+
         public override SyntaxNode VisitClassDeclaration(ClassDeclarationSyntax node)
         {
             NamespaceDeclarationSyntax namespaceDSyntax = node.FirstAncestorOrSelf<NamespaceDeclarationSyntax>();

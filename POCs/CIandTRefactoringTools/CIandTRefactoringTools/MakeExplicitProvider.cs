@@ -41,17 +41,15 @@ namespace CIandTRefactoringTools
             return new[] { action };
         }
 
-        private async Task<Solution> MakeExplicitAsync(Document document, IdentifierNameSyntax varDecl, CancellationToken cancellationToken)
+        private async Task<Document> MakeExplicitAsync(Document document, IdentifierNameSyntax varDecl, CancellationToken cancellationToken)
         {
-            var originalSolution = document.Project.Solution;
-
-            var newSolution = MakeExplicit(document, varDecl);
+            var newDocument = MakeExplicit(document, varDecl);
 
             // Return the new solution with the now-uppercase type name.
-            return newSolution;
+            return newDocument;
         }
 
-        private Solution MakeExplicit(Document document, IdentifierNameSyntax varDecl)
+        private Document MakeExplicit(Document document, IdentifierNameSyntax varDecl)
         {
             var syntaxRoot = document.GetSyntaxRootAsync().Result;
 
@@ -78,9 +76,7 @@ namespace CIandTRefactoringTools
                 newRoot = (newRoot as CompilationUnitSyntax).WithUsing(fullNamespaceString);
             }
 
-            document = document.WithSyntaxRoot(newRoot).SimplifyDocument().FormatDocument();
-
-            return document.Project.Solution;
+            return document.WithSyntaxRoot(newRoot).SimplifyDocument().FormatDocument();
         }
     }
 }
