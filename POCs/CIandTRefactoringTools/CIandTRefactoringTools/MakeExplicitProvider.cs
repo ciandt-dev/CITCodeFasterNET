@@ -27,9 +27,18 @@ namespace CIandTRefactoringTools
             // Find the node at the selection.
             var node = root.FindNode(textSpan);
 
+            var semanticModel = document.GetSemanticModelAsync().Result;
+
+            bool hasCompileError = semanticModel.GetDiagnostics(node.Parent.Span).Any(p => p.Severity == DiagnosticSeverity.Error);
+
+            if (hasCompileError) return null;
+
             // Only offer a refactoring if the selected node is a type declaration node.
             var varDecl = node as IdentifierNameSyntax;
-            if (varDecl == null || !(varDecl.IsVar && varDecl.Parent is VariableDeclarationSyntax))
+
+            if ((varDecl == null) 
+                || (varDecl.GetTypeInfoFromIdentifier(document).Type.IsAnonymousType)
+                || (!varDecl.IsVar && varDecl.Parent is VariableDeclarationSyntax))
             {
                 return null;
             }
@@ -55,15 +64,16 @@ namespace CIandTRefactoringTools
 
             var varTargetType = varDecl.GetTypeInfoFromIdentifier(document);
 
-            var varTargetTypeNamespace = varTargetType.Type.ContainingNamespace;
+            var varTargetTypeNamespace = varTargetType.GetNamespaceSymbol();
 
             var fullNamespaceString = varTargetTypeNamespace.ToDisplayString();
 
-            var varTargetTypeIdentifierName = SyntaxFactory.IdentifierName(varTargetType.Type.Name)
+            //Try to add the using before
+            var varTargetTypeIdentifierName = SyntaxFactory.IdentifierName(varTargetType.Type.ToMinimalDisplayString(document.GetSemanticModelAsync().Result, varDecl.Span.Start))
                 .WithLeadingTrivia(varDecl.GetLeadingTrivia())
                 .WithTrailingTrivia(varDecl.GetTrailingTrivia());
 
-            var newDeclaration = varDecl.ReplaceNode(varDecl, varTargetTypeIdentifierName);
+            var newDeclaration = varDecl.ReplaceNode(varDecl, varTargetTypeIdentifierName).WithAdditionalAnnotations(Simplifier.Annotation);
 
             var parentVarDeclNamespace = varDecl.FirstAncestorOrSelf<NamespaceDeclarationSyntax>();
 

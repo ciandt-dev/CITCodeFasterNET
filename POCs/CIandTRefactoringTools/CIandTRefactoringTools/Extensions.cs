@@ -31,8 +31,15 @@ namespace CIandTRefactoringTools
         public static TypeInfo GetTypeInfoFromIdentifier(this IdentifierNameSyntax identifier, Document document)
         {
             var semanticModel = document.GetSemanticModelAsync().Result;
-
             return semanticModel.GetTypeInfo(identifier);
+        }
+
+        public static INamespaceSymbol GetNamespaceSymbol(this TypeInfo typeInfo)
+        {
+            if (typeInfo.Type is IArrayTypeSymbol)
+                return (typeInfo.Type as IArrayTypeSymbol).ElementType.ContainingNamespace;
+
+            return typeInfo.Type.ContainingNamespace;
         }
 
         public static Document SimplifyDocument(this Document document)
