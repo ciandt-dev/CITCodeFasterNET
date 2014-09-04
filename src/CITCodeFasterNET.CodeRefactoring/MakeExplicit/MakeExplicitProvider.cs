@@ -14,7 +14,7 @@ using CITCodeFasterNET.InfraStructure;
 namespace CITCodeFasterNET.CodeRefactoring.MakeExplicit
 {
     [ExportCodeRefactoringProvider(MakeExplicitProvider.RefactoringId, LanguageNames.CSharp)]
-    internal class MakeExplicitProvider : ICodeRefactoringProvider
+    public class MakeExplicitProvider : ICodeRefactoringProvider
     {
         public const string RefactoringId = "MakeExplicitProvider";
 

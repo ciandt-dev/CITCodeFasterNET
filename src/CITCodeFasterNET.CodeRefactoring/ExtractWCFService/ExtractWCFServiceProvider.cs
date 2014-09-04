@@ -10,7 +10,7 @@ using Microsoft.CodeAnalysis.Text;
 namespace CITCodeFasterNET.CodeRefactoring.ExtractWCFService
 {
     [ExportCodeRefactoringProvider(ExtractWCFServiceProvider.RefactoringId, LanguageNames.CSharp)]
-    internal class ExtractWCFServiceProvider : ICodeRefactoringProvider
+    public class ExtractWCFServiceProvider : ICodeRefactoringProvider
     {
         public const string RefactoringId = "ExtractWCFServiceProvider";
 

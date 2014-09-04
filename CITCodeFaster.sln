@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CITCodeFasterNET.CodeRefact
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CITCodeFasterNET.InfraStructure", "src\CITCodeFasterNET.InfraStructure\CITCodeFasterNET.InfraStructure.csproj", "{E5374143-1243-483E-A141-6EB45CFA04F7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CITCodeFasterNET.CodeRefactoring.Test", "test\CITCodeFasterNET.CodeRefactoring.Test\CITCodeFasterNET.CodeRefactoring.Test.csproj", "{616C68CE-F89F-40E6-94A0-14AF9F665FAC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{E5374143-1243-483E-A141-6EB45CFA04F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E5374143-1243-483E-A141-6EB45CFA04F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E5374143-1243-483E-A141-6EB45CFA04F7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{616C68CE-F89F-40E6-94A0-14AF9F665FAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{616C68CE-F89F-40E6-94A0-14AF9F665FAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{616C68CE-F89F-40E6-94A0-14AF9F665FAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{616C68CE-F89F-40E6-94A0-14AF9F665FAC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
