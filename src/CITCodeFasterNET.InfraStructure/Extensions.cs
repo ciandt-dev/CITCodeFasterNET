@@ -5,6 +5,10 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.Simplification;
+using Microsoft.CodeAnalysis.CodeActions;
+using Microsoft.CodeAnalysis.CodeRefactorings;
+using Microsoft.CodeAnalysis.Text;
+using System.Threading;
 
 namespace CITCodeFasterNET.InfraStructure
 {
@@ -47,6 +51,28 @@ namespace CITCodeFasterNET.InfraStructure
         public static Document FormatDocument(this Document document)
         {
             return Formatter.FormatAsync(document).Result;
+        }
+
+        public static CodeAction GetCodeActionByDescription(this ICodeRefactoringProvider provider, Document document, TextSpan textSpan, string description)
+        {
+            return provider.GetRefactoringsAsync(document, textSpan, CancellationToken.None).Result.Where(a => a.Description == description).Single();
+        }
+
+        public static ApplyChangesOperation GetApplyChangesOperation(this CodeAction codeAction)
+        {
+            return codeAction.GetOperationsAsync(CancellationToken.None).Result.OfType<ApplyChangesOperation>().Single();
+        }
+
+        public static IEnumerable<int> IndexesOf(this string str, char c)
+        {
+            for (int position = 0; position < str.Length; position++)
+            {
+                char x = str[position];
+                if (x == c)
+                {
+                    yield return position;
+                }
+            }
         }
     }
 }

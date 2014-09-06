@@ -5,35 +5,18 @@ using CITCodeFasterNET.CodeRefactoring.MakeExplicit;
 using System.Threading;
 using System.Linq;
 using Microsoft.CodeAnalysis.CodeActions;
+using CITCodeFasterNET.Test.Infrastructure;
+using CITCodeFasterNET.InfraStructure;
 
 namespace CITCodeFasterNET.CodeRefactoring.Test
 {
     [TestClass]
     public class MakeExplicitTestFixture
     {
-        private MetadataReference mscorlib;
-        private MetadataReference Mscorlib
+        private string getOriginalSourceFor_001()
         {
-            get
-            {
-                if (mscorlib == null)
-                {
-                    mscorlib = new MetadataFileReference(typeof(object).Assembly.Location);
-                }
-
-                return mscorlib;
-            }
-        }
-
-        [TestMethod]
-        public void TestMethod1()
-        {
-            var source = @"
+            return @"
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TestNamespace
 {
@@ -43,54 +26,81 @@ namespace TestNamespace
         {
             v$ar tBoolean = true;
 
-            var tDateTime = DateTime.MinValue;
+            va$r tDateTime = DateTime.MinValue;
 
-            var tChar = 'C';
+            $var tChar = 'C';
 
-            var tInt = 0;
+            var$ tInt = 0;
 
-            var tString = " + "\"Test\"" + @";
-
-            //TODO: Handle this scenario.
-            var tDynamic = new { tInt = 0, tString = " + "\"Test\"" + @" };
-
-            //TODO: Handle this scenario.
-            var tDictionary = new Dictionary<int, string>();
-
-            //TODO: Handle this scenario.
-            var tWTF = new List<Tuple<String, DateTime, int, Contact>>();
+            v$ar tString = " + "\"Test\"" + @";
         } 
     }
 }";
-            var testCode = new TestCode(source);
+        }
+
+        private string getExpectedSourceFor_001()
+        {
+            return @"
+using System;
+
+namespace TestNamespace
+{
+    public class TestClass
+    {
+        public static void Evaluate()
+        {
+            bool tBoolean = true;
+
+            DateTime tDateTime = DateTime.MinValue;
+
+            char tChar = 'C';
+
+            int tInt = 0;
+
+            string tString = " + "\"Test\"" + @";
+        }
+    }
+}";
+        }
+
+        [TestMethod]
+        public void should_be_able_to_make_explicit_primitive_implicit_types_001()
+        {
+            var originalSource = getOriginalSourceFor_001();
+            var expectedSource = getExpectedSourceFor_001();
+
+            var testCode = new TestCode(originalSource);
 
             ProjectId projectId = ProjectId.CreateNewId();
             DocumentId documentId = DocumentId.CreateNewId(projectId);
 
             var solution = new CustomWorkspace().CurrentSolution
                 .AddProject(projectId, "MyProject", "MyProject", LanguageNames.CSharp)
-                .AddMetadataReference(projectId, Mscorlib)
+                .AddMetadataReference(projectId, CommonMetadataReferences.System)
                 .AddDocument(documentId, "MyFile.cs", testCode.Text);
 
             var document = solution.GetDocument(documentId);
 
             var makeExplicit = new MakeExplicitProvider();
 
-            var codeAction = makeExplicit.GetRefactoringsAsync(document, testCode.GetCursorMarkSpan(), CancellationToken.None).Result;
+            Solution changedSolution = solution;
+            Document changedDocument = document;
+            string changedDocumentText = null;
 
-            var codeActionOperation = codeAction.FirstOrDefault().GetOperationsAsync(CancellationToken.None).Result.OfType<ApplyChangesOperation>().FirstOrDefault();
+            foreach (var itemNode in testCode.NodesAtCursorMarkers)
+            {
+                var codeAction = makeExplicit.GetCodeActionByDescription(changedDocument, itemNode.Span, "Make explicit");
 
-            var changedSolution = codeActionOperation.ChangedSolution;
+                var codeActionOperation = codeAction.GetApplyChangesOperation();
 
-            var changedDocument = changedSolution.GetDocument(documentId);
+                changedSolution = codeActionOperation.ChangedSolution;
 
-            var changedDocumentText = changedDocument.GetTextAsync().Result;
+                changedDocument = changedSolution.GetDocument(documentId);
 
-            var testChangedCode = new TestCode(changedDocumentText.ToString());
+                changedDocumentText = changedDocument.GetTextAsync().Result.ToString();
+            }
 
-            var newTokenOnPos = testChangedCode.GetTokenOnPosition(testCode.CursorMarkNode.Span.Start);
-
-            Assert.AreEqual(newTokenOnPos.Text, "bool");
+            Assert.AreEqual(changedDocumentText, expectedSource, true);
         }
     }
 }
