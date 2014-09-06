@@ -1,0 +1,67 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+@section styles{
+    <link href="~/Content/codemirror-3.01/codemirror.css" rel="stylesheet" />
+    <style>
+        .console-out {
+            display: block;
+            border: 1px solid #999999;
+            font-family: Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;
+            width: 100% !important;
+            height: 400px;
+            max-width: none !important;
+        }
+    </style>
+}
+
+@section scripts{
+
+    <script src="~/Scripts/codemirror-3.01/codemirror.js"></script>
+    <script src="~/Scripts/codemirror-3.0/mode/clike.js"></script>
+    <script src="~/Scripts/App/Controllers/HomeIndex.js"></script>
+}
+<div class="row">
+    <div id="init-toolbar" class="btn-toolbar" role="toolbar">
+        <button id="create-console-project" type="button" class="btn btn-primary">Create Console Application Project</button>
+    </div>
+    <div id="build-run-toolbar" class="btn-toolbar" role="toolbar" style="display:none">
+        <button id="build-project" type="button" class="btn btn-primary">Build</button>
+        <button id="run-project" type="button" class="btn btn-primary">Run</button>
+    </div>
+</div>
+<div class="row">
+    <div id="editor-area" class="panel panel-default" style="display:none">
+        <div class="panel-body">
+            <textarea id="src-area">
+using System;
+
+namespace ConsoleApplication1
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+          Console.WriteLine("Teste");
+        }
+    }
+}
+            </textarea>
+        </div>
+        <div class="panel-footer">
+            <div id="build-output" class="panel panel-info" style="display:none">
+                <div class="panel-heading">Build Output</div>
+                <div class="panel-body">
+                    <textarea id="build-output-console" class="console-out"></textarea>
+                </div>
+            </div>
+            <div id="console-output-panel" class="panel panel-primary" style="display:none">
+                <div class="panel-heading">Console Output</div>
+                <div class="panel-body">
+                    <textarea id="console-output" class="console-out"></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
