@@ -1,4 +1,5 @@
-﻿/// <reference path="../../typings/jquery/jquery.d.ts" />
+﻿/// <reference path="../../typings/codemirror/codemirror.d.ts" />
+/// <reference path="../../typings/jquery/jquery.d.ts" />
 /// <reference path="../../typings/bootstrap/bootstrap.d.ts" />
 
 module App.Controllers {

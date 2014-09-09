@@ -174,3 +174,4 @@ UpgradeLog*.htm
 FakesAssemblies/
 /POCs/CIandTRefactoringTools/CIandTRefactoringTools.sln.ide
 /CITCodeFaster.sln.ide
+/POCs/Roslyn/WebCSharpEditor/WebCSharpEditor.WebApp/WebCSharpEditor.WebApp.sln.ide
