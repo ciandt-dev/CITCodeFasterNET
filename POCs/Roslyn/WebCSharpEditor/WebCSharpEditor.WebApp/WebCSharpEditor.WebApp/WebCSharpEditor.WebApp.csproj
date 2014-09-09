@@ -1,0 +1,380 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{FE2E4583-8895-49AF-9A85-AE615CE6B030}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>WebCSharpEditor.WebApp</RootNamespace>
+    <AssemblyName>WebCSharpEditor.WebApp</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <MvcBuildViews>false</MvcBuildViews>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <TypeScriptToolsVersion>1.0</TypeScriptToolsVersion>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.CodeAnalysis">
+      <HintPath>..\packages\Microsoft.CodeAnalysis.Common.0.7.4080704-beta\lib\net45\Microsoft.CodeAnalysis.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp">
+      <HintPath>..\packages\Microsoft.CodeAnalysis.CSharp.0.7.4080704-beta\lib\net45\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp.Desktop">
+      <HintPath>..\packages\Microsoft.CodeAnalysis.CSharp.0.7.4080704-beta\lib\net45\Microsoft.CodeAnalysis.CSharp.Desktop.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp.Workspaces">
+      <HintPath>..\packages\Microsoft.CodeAnalysis.CSharp.Workspaces.0.7.4080704-beta\lib\net45\Microsoft.CodeAnalysis.CSharp.Workspaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Desktop">
+      <HintPath>..\packages\Microsoft.CodeAnalysis.Common.0.7.4080704-beta\lib\net45\Microsoft.CodeAnalysis.Desktop.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.VisualBasic, Version=0.7.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.CodeAnalysis.VisualBasic.0.7.4080704-beta\lib\net45\Microsoft.CodeAnalysis.VisualBasic.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.VisualBasic.Desktop">
+      <HintPath>..\packages\Microsoft.CodeAnalysis.VisualBasic.0.7.4080704-beta\lib\net45\Microsoft.CodeAnalysis.VisualBasic.Desktop.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.VisualBasic.Workspaces">
+      <HintPath>..\packages\Microsoft.CodeAnalysis.VisualBasic.Workspaces.0.7.4080704-beta\lib\net45\Microsoft.CodeAnalysis.VisualBasic.Workspaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Workspaces">
+      <HintPath>..\packages\Microsoft.CodeAnalysis.Workspaces.Common.0.7.4080704-beta\lib\net45\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform">
+      <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.0.2.0-pre\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System" />
+    <Reference Include="System.Collections.Immutable, Version=1.1.20.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.Bcl.Immutable.1.1.20-beta\lib\portable-net45+win8\System.Collections.Immutable.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Reflection.Metadata">
+      <HintPath>..\packages\Microsoft.Bcl.Metadata.1.0.12-alpha\lib\portable-net45+win8\System.Reflection.Metadata.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Routing" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http">
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest">
+    </Reference>
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.0\lib\net45\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.0\lib\net45\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Optimization">
+      <HintPath>..\packages\Microsoft.AspNet.Web.Optimization.1.1.3\lib\net40\System.Web.Optimization.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.0\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.0\lib\net45\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.0\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.0\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="WebGrease">
+      <Private>True</Private>
+      <HintPath>..\packages\WebGrease.1.5.2\lib\WebGrease.dll</HintPath>
+    </Reference>
+    <Reference Include="Antlr3.Runtime">
+      <Private>True</Private>
+      <HintPath>..\packages\Antlr.3.4.1.9004\lib\Antlr3.Runtime.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.6.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Formatting">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.0\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.0\lib\net45\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.WebHost">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.0\lib\net45\System.Web.Http.WebHost.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App_Start\BundleConfig.cs" />
+    <Compile Include="App_Start\FilterConfig.cs" />
+    <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\Api\CSharpCompilerController.cs" />
+    <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\bootstrap.css" />
+    <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\codemirror-3.01\codemirror.css" />
+    <Content Include="Content\codemirror-3.0\dialog.css" />
+    <Content Include="Content\codemirror-3.0\simple-hint.css" />
+    <Content Include="Content\codemirror-3.0\theme\ambiance-mobile.css" />
+    <Content Include="Content\codemirror-3.0\theme\ambiance.css" />
+    <Content Include="Content\codemirror-3.0\theme\blackboard.css" />
+    <Content Include="Content\codemirror-3.0\theme\cobalt.css" />
+    <Content Include="Content\codemirror-3.0\theme\eclipse.css" />
+    <Content Include="Content\codemirror-3.0\theme\elegant.css" />
+    <Content Include="Content\codemirror-3.0\theme\erlang-dark.css" />
+    <Content Include="Content\codemirror-3.0\theme\lesser-dark.css" />
+    <Content Include="Content\codemirror-3.0\theme\monokai.css" />
+    <Content Include="Content\codemirror-3.0\theme\neat.css" />
+    <Content Include="Content\codemirror-3.0\theme\night.css" />
+    <Content Include="Content\codemirror-3.0\theme\rubyblue.css" />
+    <Content Include="Content\codemirror-3.0\theme\solarized.css" />
+    <Content Include="Content\codemirror-3.0\theme\twilight.css" />
+    <Content Include="Content\codemirror-3.0\theme\vibrant-ink.css" />
+    <Content Include="Content\codemirror-3.0\theme\xq-dark.css" />
+    <Content Include="favicon.ico" />
+    <Content Include="fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Global.asax" />
+    <Content Include="Content\Site.css" />
+    <Content Include="Scripts\bootstrap.js" />
+    <Content Include="Scripts\bootstrap.min.js" />
+    <None Include="Scripts\jquery-1.10.2.intellisense.js" />
+    <Content Include="Scripts\codemirror-3.01\codemirror.js" />
+    <Content Include="Scripts\codemirror-3.01\keymap\emacs.js" />
+    <Content Include="Scripts\codemirror-3.01\keymap\vim.js" />
+    <Content Include="Scripts\codemirror-3.01\mode\css.js" />
+    <Content Include="Scripts\codemirror-3.01\mode\htmlmixed.js" />
+    <Content Include="Scripts\codemirror-3.01\mode\javascript.js" />
+    <Content Include="Scripts\codemirror-3.01\mode\xml.js" />
+    <Content Include="Scripts\codemirror-3.0\addon\dialog\dialog.js" />
+    <Content Include="Scripts\codemirror-3.0\addon\edit\closetag.js" />
+    <Content Include="Scripts\codemirror-3.0\addon\edit\continuecomment.js" />
+    <Content Include="Scripts\codemirror-3.0\addon\edit\continuelist.js" />
+    <Content Include="Scripts\codemirror-3.0\addon\edit\matchbrackets.js" />
+    <Content Include="Scripts\codemirror-3.0\addon\fold\collapserange.js" />
+    <Content Include="Scripts\codemirror-3.0\addon\fold\foldcode.js" />
+    <Content Include="Scripts\codemirror-3.0\addon\format\formatting.js" />
+    <Content Include="Scripts\codemirror-3.0\addon\hint\javascript-hint.js" />
+    <Content Include="Scripts\codemirror-3.0\addon\hint\pig-hint.js" />
+    <Content Include="Scripts\codemirror-3.0\addon\hint\python-hint.js" />
+    <Content Include="Scripts\codemirror-3.0\addon\hint\simple-hint.js" />
+    <Content Include="Scripts\codemirror-3.0\addon\hint\xml-hint.js" />
+    <Content Include="Scripts\codemirror-3.0\addon\mode\loadmode.js" />
+    <Content Include="Scripts\codemirror-3.0\addon\mode\multiplex.js" />
+    <Content Include="Scripts\codemirror-3.0\addon\mode\overlay.js" />
+    <Content Include="Scripts\codemirror-3.0\addon\runmode\colorize.js" />
+    <Content Include="Scripts\codemirror-3.0\addon\runmode\runmode-standalone.js" />
+    <Content Include="Scripts\codemirror-3.0\addon\runmode\runmode.js" />
+    <Content Include="Scripts\codemirror-3.0\addon\runmode\runmode.node.js" />
+    <Content Include="Scripts\codemirror-3.0\addon\search\match-highlighter.js" />
+    <Content Include="Scripts\codemirror-3.0\addon\search\search.js" />
+    <Content Include="Scripts\codemirror-3.0\addon\search\searchcursor.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\apl.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\asterisk.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\clike.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\clojure.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\coffeescript.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\commonlisp.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\css.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\d.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\diff.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\ecl.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\erlang.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\gfm.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\go.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\groovy.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\haskell.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\haxe.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\htmlembedded.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\htmlmixed.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\http.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\javascript.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\jinja2.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\less.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\lua.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\markdown.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\meta.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\mysql.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\ntriples.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\ocaml.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\pascal.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\perl.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\php.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\pig.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\plsql.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\properties.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\python.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\r.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\rpm\changes.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\rpm\spec.css" />
+    <Content Include="Scripts\codemirror-3.0\mode\rpm\spec.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\rst.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\ruby.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\rust.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\sass.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\scheme.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\shell.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\sieve.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\smalltalk.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\smarty.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\sparql.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\sql.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\stex.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\tiddlywiki\tiddlywiki.css" />
+    <Content Include="Scripts\codemirror-3.0\mode\tiddlywiki\tiddlywiki.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\tiki\tiki.css" />
+    <Content Include="Scripts\codemirror-3.0\mode\tiki\tiki.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\vb.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\vbscript.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\velocity.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\verilog.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\xml.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\xquery.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\yaml.js" />
+    <Content Include="Scripts\codemirror-3.0\mode\z80.js" />
+    <Content Include="Scripts\jquery-1.10.2.js" />
+    <Content Include="Scripts\jquery-1.10.2.min.js" />
+    <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery.validate.js" />
+    <Content Include="Scripts\jquery.validate.min.js" />
+    <Content Include="Scripts\jquery.validate.unobtrusive.js" />
+    <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\modernizr-2.6.2.js" />
+    <Content Include="Scripts\respond.js" />
+    <Content Include="Scripts\respond.min.js" />
+    <Content Include="Scripts\_references.js" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Views\Web.config" />
+    <Content Include="Views\_ViewStart.cshtml" />
+    <Content Include="Views\Shared\Error.cshtml" />
+    <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\Home\About.cshtml" />
+    <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Scripts\jquery-1.10.2.min.map" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App_Data\" />
+    <Folder Include="Models\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="packages.config" />
+    <None Include="Project_Readme.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="Scripts\App\Controllers\HomeIndex.ts" />
+    <TypeScriptCompile Include="Scripts\typings\angularjs\angular-animate.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\angularjs\angular-cookies.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\angularjs\angular-mocks.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\angularjs\angular-resource.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\angularjs\angular-route.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\angularjs\angular-sanitize.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\angularjs\angular-scenario.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\angularjs\angular.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\bootstrap\bootstrap.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\jquery\jquery.d.ts" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <Target Name="MvcBuildViews" AfterTargets="AfterBuild" Condition="'$(MvcBuildViews)'=='true'">
+    <AspNetCompiler VirtualPath="temp" PhysicalPath="$(WebProjectOutputDir)" />
+  </Target>
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>54820</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:54820/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target> -->
+</Project>
