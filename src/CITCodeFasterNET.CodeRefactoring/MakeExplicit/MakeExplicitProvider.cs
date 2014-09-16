@@ -35,8 +35,9 @@ namespace CITCodeFasterNET.CodeRefactoring.MakeExplicit
             var varDecl = node as IdentifierNameSyntax;
 
             if ((varDecl == null) 
+                || (varDecl.GetTypeInfoFromIdentifier(document).Type == null)
                 || (varDecl.GetTypeInfoFromIdentifier(document).Type.IsAnonymousType)
-                || (!varDecl.IsVar && varDecl.Parent is VariableDeclarationSyntax))
+                || (!varDecl.IsVar))
             {
                 return null;
             }
@@ -61,28 +62,31 @@ namespace CITCodeFasterNET.CodeRefactoring.MakeExplicit
             var syntaxRoot = document.GetSyntaxRootAsync().Result;
 
             var varTargetType = varDecl.GetTypeInfoFromIdentifier(document);
-
             var varTargetTypeNamespace = varTargetType.GetNamespaceSymbol();
 
             var fullNamespaceString = varTargetTypeNamespace.ToDisplayString();
-
-            //Try to add the using before
-            var varTargetTypeIdentifierName = SyntaxFactory.IdentifierName(varTargetType.Type.ToMinimalDisplayString(document.GetSemanticModelAsync().Result, varDecl.Span.Start))
-                .WithLeadingTrivia(varDecl.GetLeadingTrivia())
-                .WithTrailingTrivia(varDecl.GetTrailingTrivia());
-
-            var newDeclaration = varDecl.ReplaceNode(varDecl, varTargetTypeIdentifierName).WithAdditionalAnnotations(Simplifier.Annotation);
 
             var parentVarDeclNamespace = varDecl.FirstAncestorOrSelf<NamespaceDeclarationSyntax>();
 
             var parentVarDeclNamespaceString = (parentVarDeclNamespace != null) ? parentVarDeclNamespace.Name.ToString() : null;
 
-            var newRoot = syntaxRoot.ReplaceNode(varDecl, newDeclaration);
+            var trackedRoot = syntaxRoot.TrackNodes(varDecl);
 
             if ((!string.IsNullOrWhiteSpace(parentVarDeclNamespaceString)) && (parentVarDeclNamespaceString != fullNamespaceString))
             {
-                newRoot = (newRoot as CompilationUnitSyntax).WithUsing(fullNamespaceString);
+                trackedRoot = (trackedRoot as CompilationUnitSyntax).WithUsing(fullNamespaceString);
             }
+
+            var newVarDecl = trackedRoot.GetCurrentNode(varDecl);
+
+            //Try to add the using before
+            var varTargetTypeIdentifierName = SyntaxFactory.IdentifierName(varTargetType.Type.ToMinimalDisplayString(document.WithSyntaxRoot(trackedRoot).GetSemanticModelAsync().Result, newVarDecl.Span.Start))
+                .WithLeadingTrivia(newVarDecl.GetLeadingTrivia())
+                .WithTrailingTrivia(newVarDecl.GetTrailingTrivia());
+
+            var newDeclaration = newVarDecl.ReplaceNode(newVarDecl, varTargetTypeIdentifierName).WithAdditionalAnnotations(Simplifier.Annotation);
+
+            var newRoot = trackedRoot.ReplaceNode(newVarDecl, newDeclaration);
 
             return document.WithSyntaxRoot(newRoot).SimplifyDocument().FormatDocument();
         }
