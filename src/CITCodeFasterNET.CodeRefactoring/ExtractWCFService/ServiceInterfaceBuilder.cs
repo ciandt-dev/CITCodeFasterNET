@@ -79,6 +79,8 @@ namespace CITCodeFasterNET.CodeRefactoring.ExtractWCFService
                 {
                     var originalNode = projectDoc.GetSyntaxRootAsync().Result;
                     var newNode = visitorDataContractRewriter.Visit(originalNode);
+                    projectDoc.WithSyntaxRoot(newNode);
+
                     if (newNode != originalNode)
                     {
                         newNode = (newNode as CompilationUnitSyntax).WithUsing("System.Runtime.Serialization");

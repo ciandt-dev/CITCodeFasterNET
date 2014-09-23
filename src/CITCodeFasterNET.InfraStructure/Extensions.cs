@@ -9,6 +9,7 @@ using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeRefactorings;
 using Microsoft.CodeAnalysis.Text;
 using System.Threading;
+using System;
 
 namespace CITCodeFasterNET.InfraStructure
 {
@@ -73,6 +74,36 @@ namespace CITCodeFasterNET.InfraStructure
                     yield return position;
                 }
             }
+        }
+
+        public static Project ForEachDocument(this Project project, Func<Document, Document> func)
+        {
+            Solution projectSolution = project.Solution;
+
+            foreach (var projectDoc in project.Documents)
+            {
+                var newDocument = func(projectDoc);
+
+                projectSolution = projectSolution.WithDocumentSyntaxRoot(projectDoc.Id, newDocument.GetSyntaxRootAsync().Result);
+            }
+
+            return projectSolution.GetProject(project.Id);
+        }
+
+        public static Solution ForEachDocument(this Solution solution, Func<Document, Document> func)
+        {
+            Solution newSolution = solution;
+
+            foreach (var project in solution.Projects)
+            {
+                var newProj = newSolution.GetProject(project.Id);
+
+                newProj = newProj.ForEachDocument(func);
+
+                newSolution = newProj.Solution;
+            }
+
+            return newSolution;
         }
     }
 }

@@ -82,9 +82,6 @@ namespace CITCodeFasterNET.CodeRefactoring.MakeExplicit
 
             var newVarDecl = trackedRoot.GetCurrentNode(varDecl);
 
-            var coll = new Dictionary<int, string>();
-            coll.First();
-
             //Try to add the using before
             var varTargetTypeIdentifierName = SyntaxFactory.IdentifierName(varTargetType.Type.ToMinimalDisplayString(document.WithSyntaxRoot(trackedRoot).GetSemanticModelAsync().Result, newVarDecl.Span.Start))
                 .WithLeadingTrivia(newVarDecl.GetLeadingTrivia())
