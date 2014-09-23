@@ -63,21 +63,27 @@ namespace CITCodeFasterNET.CodeRefactoring.MakeExplicit
 
             var varTargetType = varDecl.GetTypeInfoFromIdentifier(document);
             var varTargetTypeNamespace = varTargetType.GetNamespaceSymbol();
-
-            var fullNamespaceString = varTargetTypeNamespace.ToDisplayString();
-
-            var parentVarDeclNamespace = varDecl.FirstAncestorOrSelf<NamespaceDeclarationSyntax>();
-
-            var parentVarDeclNamespaceString = (parentVarDeclNamespace != null) ? parentVarDeclNamespace.Name.ToString() : null;
-
             var trackedRoot = syntaxRoot.TrackNodes(varDecl);
 
-            if ((!string.IsNullOrWhiteSpace(parentVarDeclNamespaceString)) && (parentVarDeclNamespaceString != fullNamespaceString))
+            if (varTargetTypeNamespace != null)
             {
-                trackedRoot = (trackedRoot as CompilationUnitSyntax).WithUsing(fullNamespaceString);
+                var fullNamespaceString = varTargetTypeNamespace.ToDisplayString();
+
+                var parentVarDeclNamespace = varDecl.FirstAncestorOrSelf<NamespaceDeclarationSyntax>();
+
+                var parentVarDeclNamespaceString = (parentVarDeclNamespace != null) ? parentVarDeclNamespace.Name.ToString() : null;
+
+
+                if ((!string.IsNullOrWhiteSpace(parentVarDeclNamespaceString)) && (parentVarDeclNamespaceString != fullNamespaceString))
+                {
+                    trackedRoot = (trackedRoot as CompilationUnitSyntax).WithUsing(fullNamespaceString);
+                }
             }
 
             var newVarDecl = trackedRoot.GetCurrentNode(varDecl);
+
+            var coll = new Dictionary<int, string>();
+            coll.First();
 
             //Try to add the using before
             var varTargetTypeIdentifierName = SyntaxFactory.IdentifierName(varTargetType.Type.ToMinimalDisplayString(document.WithSyntaxRoot(trackedRoot).GetSemanticModelAsync().Result, newVarDecl.Span.Start))

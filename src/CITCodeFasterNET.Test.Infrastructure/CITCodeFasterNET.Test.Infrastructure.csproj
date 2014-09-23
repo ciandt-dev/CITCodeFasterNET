@@ -66,13 +66,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommonMetadataReferences.cs" />
+    <Compile Include="MakeExplicit\TestCase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestCode.cs" />
+    <Compile Include="MakeExplicit\TestHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CITCodeFasterNET.CodeRefactoring\CITCodeFasterNET.CodeRefactoring.csproj">
+      <Project>{8fc59e73-5c6c-45c0-b5df-1ec7fedc795c}</Project>
+      <Name>CITCodeFasterNET.CodeRefactoring</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CITCodeFasterNET.InfraStructure\CITCodeFasterNET.InfraStructure.csproj">
       <Project>{e5374143-1243-483e-a141-6eb45cfa04f7}</Project>
       <Name>CITCodeFasterNET.InfraStructure</Name>

@@ -15,186 +15,197 @@ namespace CITCodeFasterNET.CodeRefactoring.Test
     {
         #region Source creation methods 
 
-        private string getOriginalSourceFor_001()
-        {
-            return @"
-using System;
-
-namespace TestNamespace
-{
-    public class TestClass
-    {
-        public static void Evaluate()
-        {
-            v$ar tBoolean = true;
-
-            va$r tDateTime = DateTime.MinValue;
-
-            $var tChar = 'C';
-
-            var$ tInt = 0;
-
-            v$ar tString = " + "\"Test\"" + @";
-        } 
-    }
-}";
-        }
-
-        private string getExpectedSourceFor_001()
-        {
-            return @"
-using System;
-
-namespace TestNamespace
-{
-    public class TestClass
-    {
-        public static void Evaluate()
-        {
-            bool tBoolean = true;
-
-            DateTime tDateTime = DateTime.MinValue;
-
-            char tChar = 'C';
-
-            int tInt = 0;
-
-            string tString = " + "\"Test\"" + @";
-        }
-    }
-}";
-        }
-
-
-        private string getOriginalSourceFor_002()
-        {
-            return @"
-using System;
-
-namespace TestNamespace
-{
-    public class TestClass
-    {
-        public void Method()
-        {
-            // faz algum processamento 
-            const string stringTest = " + "\"\"" + @";
-            
-            $var variavel = StringMethod();
-            
-            $var inteiro = 12;
-            
-            $var variavelString = StringMethod();
-
-            $var aa = true;
-
-            va$r tArrayFixed = new int[10];
-
-            $var tArrayFixed01 = new int[0];
-
-            v$ar tArray = new int[] { 1 };
-        }
-
-        private string StringMethod()
-        {
-            return " + "\"String\"" + @";
-        }
-    }
-}";
-        }
-
-        private string getExpectedSourceFor_002()
-        {
-            return @"
-using System;
-
-namespace TestNamespace
-{
-    public class TestClass
-    {
-        public void Method()
-        {
-            // faz algum processamento 
-            const string stringTest = " + "\"\"" + @";
-
-            string variavel = StringMethod();
-
-            int inteiro = 12;
-
-            string variavelString = StringMethod();
-
-            bool aa = true;
-
-            int[] tArrayFixed = new int[10];
-
-            int[] tArrayFixed01 = new int[0];
-
-            int[] tArray = new int[] { 1 };
-        }
-
-        private string StringMethod()
-        {
-            return " + "\"String\"" + @";
-        }
-    }
-}";
-        }
-
+        
         #endregion Source creation methods 
 
 
         [TestMethod]
-        public void should_be_able_to_make_explicit_primitive_implicit_types_001()
+        public void should_refactory_when_value_is_primitive_int_constant()
         {
-            var originalSource = getOriginalSourceFor_001();
-            var expectedSource = getExpectedSourceFor_001();
+            // Arrange
+            var testCase = TestHelper.CreateTestDocumentWithDeclaration("va$r i = 0;");
 
-            TestProvider(originalSource, expectedSource);
+            // Act
+            var finalText = TestHelper.ApplyRefactory(testCase);
+
+            // Assert
+            Assert.IsTrue(finalText.Contains("int i = 0;"));
         }
 
         [TestMethod]
-        public void should_be_able_to_make_explicit_dynamic_array_generics_implicit_types_002()
+        public void should_refactory_when_value_is_primitive_string_constant()
         {
-            var originalSource = getOriginalSourceFor_002();
-            var expectedSource = getExpectedSourceFor_002();
-            TestProvider(originalSource, expectedSource);
+            // Arrange
+            var testCase = TestHelper.CreateTestDocumentWithDeclaration("va$r i = \"0\";");
+
+            // Act
+            var finalText = TestHelper.ApplyRefactory(testCase);
+
+            // Assert
+            Assert.IsTrue(finalText.Contains("string i = \"0\";"));
         }
 
-        private void TestProvider(string originalSource, string expectedSource)
+        [TestMethod]
+        public void should_refactory_when_value_is_primitive_bool_constant()
         {
+            // Arrange
+            var testCase = TestHelper.CreateTestDocumentWithDeclaration("v$ar tBoolean = true;");
 
-            var testCode = new TestCode(originalSource);
+            // Act
+            var finalText = TestHelper.ApplyRefactory(testCase);
 
-            ProjectId projectId = ProjectId.CreateNewId();
-            DocumentId documentId = DocumentId.CreateNewId(projectId);
+            // Assert
+            Assert.IsTrue(finalText.Contains("bool tBoolean = true;"));
+        }
 
-            var solution = new CustomWorkspace().CurrentSolution
-                .AddProject(projectId, "MyProject", "MyProject", LanguageNames.CSharp)
-                .AddMetadataReference(projectId, CommonMetadataReferences.System)
-                .AddDocument(documentId, "MyFile.cs", testCode.Text);
+        [TestMethod]
+        public void should_refactory_when_value_is_primitive_char_constant()
+        {
+            // Arrange
+            var testCase = TestHelper.CreateTestDocumentWithDeclaration("$var tChar = 'C';");
 
-            var document = solution.GetDocument(documentId);
+            // Act
+            var finalText = TestHelper.ApplyRefactory(testCase);
 
-            var makeExplicit = new MakeExplicitProvider();
+            // Assert
+            Assert.IsTrue(finalText.Contains("char tChar = 'C';"));
+        }
 
-            Solution changedSolution = solution;
-            Document changedDocument = document;
-            string changedDocumentText = null;
+        [TestMethod]
+        public void should_refactory_when_value_is_a_system_complex_type()
+        {
+            // Arrange
+            var testCase = TestHelper.CreateTestDocumentWithDeclaration("v$ar date = DateTime.Now;");
 
-            foreach (var itemNode in testCode.NodesAtCursorMarkers)
-            {
-                var codeAction = makeExplicit.GetCodeActionByDescription(changedDocument, itemNode.Span, "Make explicit");
+            // Act
+            var finalText = TestHelper.ApplyRefactory(testCase);
 
-                var codeActionOperation = codeAction.GetApplyChangesOperation();
+            // Assert
+            Assert.IsTrue(finalText.Contains("DateTime date = DateTime.Now;"));
+        }
 
-                changedSolution = codeActionOperation.ChangedSolution;
+        [TestMethod]
+        public void should_refactory_when_value_is_a_user_defined_complex_type()
+        {
+            // Arrange
+            var testCase = TestHelper.CreateTestDocumentWithDeclaration("v$ar testObj = new TestObject();");
 
-                changedDocument = changedSolution.GetDocument(documentId);
+            // Act
+            var finalText = TestHelper.ApplyRefactory(testCase);
 
-                changedDocumentText = changedDocument.GetTextAsync().Result.ToString();
-            }
+            // Assert
+            Assert.IsTrue(finalText.Contains("TestObject testObj = new TestObject();"));
+        }
 
-            Assert.AreEqual(changedDocumentText, expectedSource, true);
+        [TestMethod]
+        public void should_refactory_when_value_is_a_primitive_fixed_array()
+        {
+            // Arrange
+            var testCase = TestHelper.CreateTestDocumentWithDeclaration("va$r tArrayFixed = new int[10];");
+
+            // Act
+            var finalText = TestHelper.ApplyRefactory(testCase);
+
+            // Assert
+            Assert.IsTrue(finalText.Contains("int[] tArrayFixed = new int[10];"));
+        }
+
+        [TestMethod]
+        public void should_refactory_when_value_is_a_primitive_fixed_single_position_array()
+        {
+            // Arrange
+            var testCase = TestHelper.CreateTestDocumentWithDeclaration("va$r tArrayFixed = new int[0];");
+
+            // Act
+            var finalText = TestHelper.ApplyRefactory(testCase);
+
+            // Assert
+            Assert.IsTrue(finalText.Contains("int[] tArrayFixed = new int[0];"));
+        }
+
+        [TestMethod]
+        public void should_refactory_when_value_is_a_primitive_variable_array()
+        {
+            // Arrange
+            var testCase = TestHelper.CreateTestDocumentWithDeclaration("v$ar tArray = new int[] { 1 };");
+
+            // Act
+            var finalText = TestHelper.ApplyRefactory(testCase);
+
+            // Assert
+            Assert.IsTrue(finalText.Contains("int[] tArray = new int[] { 1 };"));
+        }
+
+        [TestMethod]
+        public void should_refactory_when_value_is_the_return_of_a_function()
+        {
+            // Arrange
+            var testCase = TestHelper.CreateTestDocumentWithDeclaration("$var stringVar = StringMethod();");
+
+            // Act
+            var finalText = TestHelper.ApplyRefactory(testCase);
+
+            // Assert
+            Assert.IsTrue(finalText.Contains("string stringVar = StringMethod();"));
+        }
+       
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void should_NOT_refactory_when_there_are_compilation_errors()
+        {
+            // Arrange
+            var testCase = TestHelper.CreateTestDocumentWithDeclaration("$var stringVar = StringMethod()");
+
+            // Act
+            TestHelper.ApplyRefactory(testCase);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void should_NOT_refactory_when_value_type_is_anonymous()
+        {
+            // Arrange
+            var testCase = TestHelper.CreateTestDocumentWithDeclaration("$var dynVar = new { s = 1; };");
+
+            // Act
+            TestHelper.ApplyRefactory(testCase);
+        }
+
+        [TestMethod]
+        public void should_refactory_when_value_is_type_dynamic()
+        {
+            // Arrange
+            var testCase = TestHelper.CreateTestDocumentWithDeclaration("$var dynVar = 1 as dynamic;");
+
+            // Act
+            var finalText = TestHelper.ApplyRefactory(testCase);
+
+            // Assert
+            Assert.IsTrue(finalText.Contains("dynamic dynVar = 1 as dynamic;"));
+        }
+
+        [TestMethod]
+        public void should_refactory_when_value_type_is_generic()
+        {
+            // Arrange
+            var testCase = TestHelper.CreateTestDocumentWithDeclaration("$var genericVar = new Dictionary<int, List<Tuple<int, int, string>>>();");
+
+            // Act
+            var finalText = TestHelper.ApplyRefactory(testCase);
+
+            // Assert                       
+            Assert.IsTrue(finalText.Contains("Dictionary<int, List<Tuple<int, int, string>>> genericVar = new Dictionary<int, List<Tuple<int, int, string>>>();"));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void should_NOT_refactory_when_value_is_not_set()
+        {
+            // Arrange
+            var testCase = TestHelper.CreateTestDocumentWithDeclaration("$var emptyVar;");
+
+            // Act
+            TestHelper.ApplyRefactory(testCase);
         }
     }
 }
