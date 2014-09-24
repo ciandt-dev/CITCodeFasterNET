@@ -8,12 +8,41 @@ using Microsoft.CodeAnalysis.CodeActions;
 using CITCodeFasterNET.Test.Infrastructure;
 using CITCodeFasterNET.InfraStructure;
 using System.Collections.Generic;
+using CITCodeFasterNET.Test.Infrastructure.SourceCode;
 
 namespace CITCodeFasterNET.CodeRefactoring.Test
 {
     [TestClass]
     public class ConvertStaticToExtensionFixture
     {
+        [TestMethod]
+        public void should_000()
+        {
+            var sourceBuilder = SourceCodeBuilder.New()
+                .WithUsing(
+                    UsingCodeBuilder.New("System"),
+                    UsingCodeBuilder.New("System.Collections.Generic"),
+                    UsingCodeBuilder.New("System.Linq", "linq")
+                )
+                .WithNamespace(
+                    NamespaceCodeBuilder.New("MyNameSpace")
+                        .WithTypes(
+                            ClassCodeBuilder.New("MyClass", CodeModifier.Public, CodeModifier.Abstract)
+                                .WithTypes(
+                                    ClassCodeBuilder.New("MyIntClass", CodeModifier.Internal)
+                                        .WithTypes(
+                                            ClassCodeBuilder.New("MyIntClass02", CodeModifier.Internal)
+                                        )
+                                )
+                        ),
+                    NamespaceCodeBuilder.New("MyNameSpace.SubSpace")
+                );
+
+            var sourceCode = sourceBuilder.Build();
+
+            Console.WriteLine();
+        }
+
         [TestMethod]
         public void should_001()
         {

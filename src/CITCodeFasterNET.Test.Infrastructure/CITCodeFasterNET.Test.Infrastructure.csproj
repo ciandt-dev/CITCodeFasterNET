@@ -68,6 +68,20 @@
     <Compile Include="CommonMetadataReferences.cs" />
     <Compile Include="MakeExplicit\TestCase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SourceCode\BaseSourceCodeBuilder.cs" />
+    <Compile Include="SourceCode\ClassCodeBuilder.cs" />
+    <Compile Include="SourceCode\ConstructorCodeBuilder.cs" />
+    <Compile Include="SourceCode\Enumerations.cs" />
+    <Compile Include="SourceCode\FieldDeclarationCodeBuilder.cs" />
+    <Compile Include="SourceCode\FreeCodeBuilder.cs" />
+    <Compile Include="SourceCode\ITypeCodeContainerBuilder.cs" />
+    <Compile Include="SourceCode\MethodCodeBuilder.cs" />
+    <Compile Include="SourceCode\NamespaceCodeBuilder.cs" />
+    <Compile Include="SourceCode\PropertyDeclarationCodeBuilder.cs" />
+    <Compile Include="SourceCode\SourceCodeBuilder.cs" />
+    <Compile Include="SourceCode\TypeCodeBuilder.cs" />
+    <Compile Include="SourceCode\UsingCodeBuilder.cs" />
+    <Compile Include="SourceCode\VariableDeclarationCodeBuilder.cs" />
     <Compile Include="TestCode.cs" />
     <Compile Include="MakeExplicit\TestHelper.cs" />
   </ItemGroup>
