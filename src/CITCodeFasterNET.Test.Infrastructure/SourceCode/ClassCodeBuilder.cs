@@ -11,10 +11,12 @@ namespace CITCodeFasterNET.Test.Infrastructure.SourceCode
         private CodeModifier[] modifiers;
         private string name;
 
+        public IList<FieldDeclarationCodeBuilder> Fields { get; private set; }
         public IList<TypeCodeBuilder> TypeCodes { get; private set; }
 
         public ClassCodeBuilder(string name, CodeModifier[] modifiers)
         {
+            Fields = new List<FieldDeclarationCodeBuilder>();
             TypeCodes = new List<TypeCodeBuilder>();
 
             WithName(name);
@@ -44,6 +46,19 @@ namespace CITCodeFasterNET.Test.Infrastructure.SourceCode
             return this;
         }
 
+        public ClassCodeBuilder WithFields(params FieldDeclarationCodeBuilder[] fields)
+        {
+            if (fields != null)
+            {
+                foreach (var item in fields)
+                {
+                    Fields.Add(item);
+                }
+            }
+
+            return this;
+        }
+
         public override string Build(int identTabs = 0)
         {
             buildCode(identTabs);
@@ -66,9 +81,19 @@ namespace CITCodeFasterNET.Test.Infrastructure.SourceCode
             SourceBuilder.AppendLine(string.Format("class {0}", this.name));
             SourceBuilder.AppendLine("{");
 
+            buildFields(identTabs);
+
             buildTypeCodes(identTabs);
 
             SourceBuilder.Append("}");
+        }
+
+        private void buildFields(int currentTabs = 0)
+        {
+            foreach (var item in Fields)
+            {
+                SourceBuilder.AppendLine(item.Build(currentTabs));
+            }
         }
 
         private void buildTypeCodes(int currentTabs = 0)

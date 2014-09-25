@@ -8,5 +8,14 @@ namespace CITCodeFasterNET.Test.Infrastructure.SourceCode
 {
     public class FieldDeclarationCodeBuilder : VariableDeclarationCodeBuilder
     {
+        public FieldDeclarationCodeBuilder(string identifierName, string type = "object")
+            : base(identifierName, type)
+        {
+        }
+
+        public static FieldDeclarationCodeBuilder New(string identifierName, string type)
+        {
+            return new FieldDeclarationCodeBuilder(identifierName, type);
+        }
     }
 }

@@ -28,6 +28,7 @@ namespace CITCodeFasterNET.CodeRefactoring.Test
                     NamespaceCodeBuilder.New("MyNameSpace")
                         .WithTypes(
                             ClassCodeBuilder.New("MyClass", CodeModifier.Public, CodeModifier.Abstract)
+                                .WithFields(FieldDeclarationCodeBuilder.New("int", "testIntField"))
                                 .WithTypes(
                                     ClassCodeBuilder.New("MyIntClass", CodeModifier.Internal)
                                         .WithTypes(
