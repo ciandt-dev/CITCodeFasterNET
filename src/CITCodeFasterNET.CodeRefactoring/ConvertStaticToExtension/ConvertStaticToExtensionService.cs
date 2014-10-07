@@ -33,6 +33,11 @@ namespace CITCodeFasterNET.CodeRefactoring.ConvertStaticToExtension
 
                 var newRWDocument = document;
 
+                var rewriter = new StaticToExtensionReferencesRewriter();
+                var syntaxRoot = document.GetSyntaxRootAsync().Result;
+                var newSyntaxRoot = rewriter.Visit(syntaxRoot);
+                newRWDocument = document.WithSyntaxRoot(newSyntaxRoot);
+
                 return newRWDocument;
             });
 
@@ -58,5 +63,31 @@ namespace CITCodeFasterNET.CodeRefactoring.ConvertStaticToExtension
 
     public class StaticToExtensionReferencesRewriter : CSharpSyntaxRewriter
     {
+        public override SyntaxNode VisitInvocationExpression(InvocationExpressionSyntax node)
+        {
+            MemberAccessExpressionSyntax m = null;
+            IdentifierNameSyntax i = null;
+            var syntaxNode = node.Expression as SyntaxNode;
+            var expression = node.Expression as ExpressionSyntax;
+            var tokens = node.DescendantNodesAndTokens().Where(p => p.IsToken && p.AsToken().ValueText.Equals("ConvertToQueue"));
+
+            var token = tokens.OfType<SyntaxNodeOrToken>().FirstOrDefault().AsToken();
+
+            var parentToken = token.Parent as IdentifierNameSyntax;
+
+            if (parentToken != null)
+            {
+                // Replace the identifier token containing the name of the class.
+                SyntaxToken updatedIdentifierToken =
+                    SyntaxFactory.Identifier(
+                        token.LeadingTrivia,
+                        "newName",
+                        token.TrailingTrivia);
+
+                parentToken = parentToken.WithIdentifier(updatedIdentifierToken);
+            }
+
+            return base.VisitInvocationExpression(node);
+        }
     }
 }

@@ -65,8 +65,26 @@ public static void Test()
 {
     var strTest = " + "\"My queued string.\"" + @";
 
-    var queuedString =  ConvertToQueue(strTest);
-}");
+    var queuedString = ConvertToQueue(strTest);
+    var test = TestClass.ConvertToQueue(strTest);
+    Method(TestClass.ConvertToQueue(strTest));
+    Method(ConvertToQueue(strTest));
+    MethodClone(ConvertToQueue);
+    MethodClone((x) => ConvertToQueue(x));
+    MethodClone((x) => { return ConvertToQueue(x); });
+
+}
+
+public static void Method(Queue<char> queueChar)
+{
+    return;
+}
+
+public static Queue<char> MethodClone(Func<string, Queue<char>> funcQueueChar)
+{
+    return funcQueueChar(" + "\"bla\"" + @");
+}
+");
 
             // Act
             var finalText = TestHelper.ApplyRefactory<ConvertStaticToExtensionProvider>("Convert to extension method", testCase);

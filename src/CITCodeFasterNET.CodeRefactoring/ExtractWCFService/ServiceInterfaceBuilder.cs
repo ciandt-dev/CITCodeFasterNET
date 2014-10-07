@@ -72,23 +72,25 @@ namespace CITCodeFasterNET.CodeRefactoring.ExtractWCFService
 
             var visitorDataContractRewriter = new DataContractElegibleComplexTypeRewriter(visitorDataContract.ElegibleClasses, newSolution.Workspace);
 
-            foreach (var project in solution.Projects)
+            solution.ForEachDocument((document) =>
             {
-                var newProj = newSolution.GetProject(project.Id);
-                foreach (var projectDoc in newProj.Documents)
-                {
-                    var originalNode = projectDoc.GetSyntaxRootAsync().Result;
-                    var newNode = visitorDataContractRewriter.Visit(originalNode);
-                    projectDoc.WithSyntaxRoot(newNode);
+                var newDocument = document;
 
-                    if (newNode != originalNode)
-                    {
-                        newNode = (newNode as CompilationUnitSyntax).WithUsing("System.Runtime.Serialization");
-                        newSolution = newSolution.WithDocumentSyntaxRoot(projectDoc.Id, newNode);
-                        changedDocs.Add(projectDoc.Id);
-                    }
+                var originalNode = document.GetSyntaxRootAsync().Result;
+                var newNode = visitorDataContractRewriter.Visit(originalNode);
+
+                if (newNode != originalNode)
+                {
+                    newNode = (newNode as CompilationUnitSyntax).WithUsing("System.Runtime.Serialization");
+                    newSolution = newSolution.WithDocumentSyntaxRoot(newDocument.Id, newNode);
+
+                    newDocument = newSolution.GetDocument(document.Id);
+
+                    changedDocs.Add(newDocument.Id);
                 }
-            }
+
+                return newDocument;
+            });
 
             return newSolution;
         }
