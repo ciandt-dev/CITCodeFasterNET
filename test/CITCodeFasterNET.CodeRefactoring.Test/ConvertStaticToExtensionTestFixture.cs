@@ -49,7 +49,7 @@ namespace CITCodeFasterNET.CodeRefactoring.Test
         {
             // Arrange
             var testCase = TestHelper.CreateTestDocumentWithClassAditionalContent(
-@"public static Queue<char> Con$vertToQueue(string str)
+@"public static Queue<char> Con$vertToQueue(string str, int count = 0)
 {
     var result = new Queue<char>();
 
@@ -61,15 +61,22 @@ namespace CITCodeFasterNET.CodeRefactoring.Test
     return result;
 }
 
+public static bool TestExtension(this string str)
+{
+    return true;
+}
+
 public static void Test()
 {
     var strTest = " + "\"My queued string.\"" + @";
 
+    //var t01 = strTest.TestExtension();
+
+    MethodClone(ConvertToQueue);
     var queuedString = ConvertToQueue(strTest);
-    var test = TestClass.ConvertToQueue(strTest);
+    var test = TestClass.ConvertToQueue(strTest, 10);
     Method(TestClass.ConvertToQueue(strTest));
     Method(ConvertToQueue(strTest));
-    MethodClone(ConvertToQueue);
     MethodClone((x) => ConvertToQueue(x));
     MethodClone((x) => { return ConvertToQueue(x); });
 
