@@ -64,6 +64,7 @@ public static void Test()
             var finalText = TestHelper.ApplyRefactory<ConvertStaticToExtensionProvider>("Convert to extension method", testCase);
 
             // Assert
+            Assert.IsTrue(finalText.Contains("public static Queue<char> ConvertToQueue(this string str,int count = 0)"));
             Assert.IsTrue(finalText.Contains("var queuedString = strTest.ConvertToQueue();"));
         }
 
@@ -87,6 +88,7 @@ public static void Test()
             var finalText = TestHelper.ApplyRefactory<ConvertStaticToExtensionProvider>("Convert to extension method", testCase);
 
             // Assert
+            Assert.IsTrue(finalText.Contains("public static Queue<char> ConvertToQueue(this string str,int count = 0)"));
             Assert.IsTrue(finalText.Contains("var test = strTest.ConvertToQueue(10);"));
         }
 
@@ -115,6 +117,7 @@ public static void Method(Queue<char> queueChar)
             var finalText = TestHelper.ApplyRefactory<ConvertStaticToExtensionProvider>("Convert to extension method", testCase);
 
             // Assert
+            Assert.IsTrue(finalText.Contains("public static Queue<char> ConvertToQueue(this string str,int count = 0)"));
             Assert.IsTrue(finalText.Contains("Method(strTest.ConvertToQueue());"));
         }
 
@@ -124,7 +127,7 @@ public static void Method(Queue<char> queueChar)
         {
             // Arrange
             var testCase = TestHelper.CreateTestDocumentWithClassAditionalContent(
-StaticMethod() + 
+StaticMethod() +
 @"
 public static void Test()
 {
@@ -143,6 +146,7 @@ public static void Method(Queue<char> queueChar)
             var finalText = TestHelper.ApplyRefactory<ConvertStaticToExtensionProvider>("Convert to extension method", testCase);
 
             // Assert
+            Assert.IsTrue(finalText.Contains("public static Queue<char> ConvertToQueue(this string str,int count = 0)"));
             Assert.IsTrue(finalText.Contains("Method(strTest.ConvertToQueue());"));
         }
 
@@ -154,7 +158,7 @@ public static void Method(Queue<char> queueChar)
         {
             // Arrange
             var testCase = TestHelper.CreateTestDocumentWithClassAditionalContent(
-StaticMethod() + 
+StaticMethod() +
 @"
 public static void Test()
 {
@@ -171,6 +175,7 @@ public static Queue<char> MethodClone(Func<string, Queue<char>> funcQueueChar)
             var finalText = TestHelper.ApplyRefactory<ConvertStaticToExtensionProvider>("Convert to extension method", testCase);
 
             // Assert
+            Assert.IsTrue(finalText.Contains("public static Queue<char> ConvertToQueue(this string str,int count = 0)"));
             Assert.IsTrue(finalText.Contains("MethodClone((x) => x.ConvertToQueue());"));
         }
 
@@ -199,7 +204,41 @@ public static Queue<char> MethodClone(Func<string, Queue<char>> funcQueueChar)
             var finalText = TestHelper.ApplyRefactory<ConvertStaticToExtensionProvider>("Convert to extension method", testCase);
 
             // Assert
+            Assert.IsTrue(finalText.Contains("public static Queue<char> ConvertToQueue(this string str,int count = 0)"));
             Assert.IsTrue(finalText.Contains("MethodClone((x) => { return x.ConvertToQueue(); });"));
+        }
+
+
+        [TestMethod]
+        public void should_NOT_refactory_when_method_is_passed_as_argument_but_make_transform_it_to_extension()
+        {
+            // Arrange
+            var testCase = TestHelper.CreateTestDocumentWithClassAditionalContent(
+@"
+        private static int str$angeMethod(int param)
+        {
+            return param;
+        }
+
+        private static void notSoStrangeMethod(Func<int,int> function)
+        {
+            var a = function(1);
+        }
+
+        public void MyTestMethod()
+        {
+            notSoStrangeMethod(strangeMethod);
+        }
+        ");
+
+            // Act
+            var finalText = TestHelper.ApplyRefactory<ConvertStaticToExtensionProvider>("Convert to extension method", testCase);
+
+            // Assert
+        
+            Assert.IsTrue(finalText.Contains("private static int strangeMethod(this int param)"));
+            Assert.IsTrue(finalText.Contains("var a = function(1);"));
+            Assert.IsTrue(finalText.Contains("notSoStrangeMethod(strangeMethod);"));
         }
 
 
@@ -248,6 +287,7 @@ public static Queue<char> MethodClone(Func<string, Queue<char>> funcQueueChar)
             var finalText = TestHelper.ApplyRefactory<ConvertStaticToExtensionProvider>("Convert to extension method", testCase);
 
             // Assert
+            Assert.IsTrue(finalText.Contains("public static Queue<char> ConvertToQueue(this string str,int count = 0)"));
             Assert.IsTrue(finalText.Contains(
     @"var queuedString = strTest.ConvertToQueue();
     var test = strTest.ConvertToQueue(10);
@@ -295,6 +335,4 @@ public static Queue<char> MethodClone(Func<string, Queue<char>> funcQueueChar)
         }
 
     }
-
-
 }
